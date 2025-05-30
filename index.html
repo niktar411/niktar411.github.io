@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химические соединения</title>
+    <style>
+        :root {
+            font-family: Arial, Helvetica, sans-serif;
+            --base-size: min(max(12px, 2vw), 16px);
+            --padding: min(max(5px, 1.5vw), 15px);
+            --gap: min(max(3px, 1vw), 8px);
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            padding: var(--gap);
+            background-color: #f5f5f5;
+            font-size: var(--base-size);
+        }
+
+        .wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: var(--padding);
+            border-radius: calc(var(--padding) / 2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: calc(var(--base-size) * 2.3);
+            font-weight: bold;
+            text-align: center;
+            padding: var(--gap);
+            margin: 0 0 calc(var(--gap) * 2) 0;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            height: calc(var(--base-size) * 2.5);
+            background-color: #eee;
+            margin: 0;
+            padding: 0 var(--gap);
+            border-radius: calc(var(--gap) / 2);
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            width: calc(var(--base-size) * 3);
+        }
+
+        .current_game {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 0 var(--gap);
+            min-width: 0;
+        }
+
+        #game_task {
+            font-size: calc(var(--base-size) * 1.2);
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        #game_score {
+            font-size: calc(var(--base-size) * 1.9);
+        }
+
+        .start_and_time {
+            display: flex;
+            width: calc(var(--base-size) * 4);
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .button_start {
+            height: calc(var(--base-size) * 1.8);
+            width: 100%;
+            background-color: #e74a29;
+            padding: calc(var(--gap) / 2);
+            border: 1px solid #555;
+            border-radius: calc(var(--gap) / 2);
+            color: #fff;
+            font-size: calc(var(--base-size) * 1.25);
+            cursor: pointer;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .game_timer {
+            font-size: calc(var(--base-size) * 1.1);
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tm_game_menu {
+            position: absolute;
+            background: #2b3a42;
+            width: calc(var(--base-size) * 16);
+            padding: var(--gap);
+            border: 1px solid #000;
+            border-radius: calc(var(--gap) / 2);
+            z-index: 100;
+            left: var(--gap);
+            top: calc(var(--base-size) * 3.5);
+        }
+
+        .tm_game_menu_list {
+            list-style: none;
+            padding-left: calc(var(--gap) * 0.8);
+            margin: 0;
+            color: #fff;
+            font-size: calc(var(--base-size) * 1.3);
+        }
+
+        .tm_game_menu_list>li:first-child,
+        .tm_game_menu_list>li:nth-child(4) {
+            font-weight: bold;
+            padding: calc(var(--gap) * 0.5) 0;
+        }
+
+        .menu_button {
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            width: calc(var(--base-size) * 2);
+            height: calc(var(--base-size) * 2);
+        }
+
+        .button_apply {
+            margin: var(--gap) auto 0;
+            font-size: calc(var(--base-size) * 0.9);
+            width: calc(var(--base-size) * 7);
+            text-align: center;
+            padding: calc(var(--gap) / 2);
+            cursor: pointer;
+            background-color: #ddd;
+            border-radius: calc(var(--gap) / 2);
+        }
+
+        /* Таблица соединений */
+        #compounds_table {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(calc(var(--base-size) * 8), 1fr));
+            gap: var(--gap);
+            margin-top: calc(var(--gap) * 2);
+        }
+
+        .compound {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: calc(var(--base-size) * 5);
+            padding: var(--gap);
+            border-radius: calc(var(--gap) / 2);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .compound-name {
+            font-size: calc(var(--base-size) * 1.35);
+            margin-bottom: calc(var(--gap) / 3);
+            line-height: 1.2;
+        }
+
+        .compound-formula {
+            font-size: calc(var(--base-size) * 2);
+            line-height: 1.2;
+        }
+
+        /* Категории соединений */
+        .acid {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .oxide {
+            background-color: #48dbfb;
+        }
+
+        .hydroxide {
+            background-color: #1dd1a1;
+            color: white;
+        }
+
+        .salt {
+            background-color: #feca57;
+        }
+
+        .error {
+            background-color: #000 !important;
+            color: white !important;
+            transition: all 0.2s;
+        }
+
+        /* Анимация правильного ответа */
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background-color: #2ecc71; }
+            100% { transform: scale(1); }
+        }
+
+        .correct {
+            animation: correctAnswer 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Химические соединения</h1>
+
+        <div class="header">
+            <div class="options">
+                <div class="menu_button" id="menu_options">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div id="menushka" class="tm_game_menu hidden">
+                    <ul class="tm_game_menu_list">
+                        <li>Тип задания</li>
+                        <li><input type="radio" name="comp_type" value="name" checked="checked">Название → Формула</li>
+                        <li><input type="radio" name="comp_type" value="formula">Формула → Название</li>
+                        <li>Категории</li>
+                        <li><input type="checkbox" name="comp_cat" value="acid" checked>Кислоты</li>
+                        <li><input type="checkbox" name="comp_cat" value="oxide" checked>Оксиды</li>
+                        <li><input type="checkbox" name="comp_cat" value="hydroxide" checked>Гидроксиды</li>
+                        <li><input type="checkbox" name="comp_cat" value="salt" checked>Соли</li>
+                    </ul>
+                    <div onclick="open_close()" class="button_apply">Применить</div>
+                </div>
+            </div>
+            <div class="current_game">
+                <div id="game_task"></div>
+                <div id="game_score">Баллы: 0</div>
+            </div>
+            <div class="start_and_time">
+                <div id="game_time" class="game_timer hidden">2:00</div>
+                <div onclick="game_start()" id="game_start" class="button_start">Старт</div>
+            </div>
+        </div>
+
+        <div id="compounds_table"></div>
+    </div>
+
+    <script>
+        "use strict";
+        
+        // Данные химических соединений
+        const compoundsData = [
+            {name: "Соляная кислота", formula: "HCl", category: "acid"},
+            {name: "Серная кислота", formula: "H₂SO₄", category: "acid"},
+            {name: "Азотная кислота", formula: "HNO₃", category: "acid"},
+            {name: "Фосфорная кислота", formula: "H₃PO₄", category: "acid"},
+            {name: "Угольная кислота", formula: "H₂CO₃", category: "acid"},
+            {name: "Кремниевая кислота", formula: "H₂SiO₃", category: "acid"},
+            {name: "Сернистая кислота", formula: "H₂SO₃", category: "acid"},
+            {name: "Серо водородная кислота", formula: "H₂S", category: "acid"},
+            {name: "Вода", formula: "H₂O", category: "oxide"},
+            {name: "Оксид углерода(II)", formula: "CO", category: "oxide"},
+            {name: "Оксид углерода(IV)", formula: "CO₂", category: "oxide"},
+            {name: "Оксид серы(IV)", formula: "SO₂", category: "oxide"},
+            {name: "Оксид серы(VI)", formula: "SO₃", category: "oxide"},
+            {name: "Оксид кальция", formula: "CaO", category: "oxide"},
+            {name: "Оксид натрия", formula: "Na₂O", category: "oxide"},
+            {name: "Оксид алюминия", formula: "Al₂O₃", category: "oxide"},
+            {name: "Гидроксид натрия", formula: "NaOH", category: "hydroxide"},
+            {name: "Гидроксид калия", formula: "KOH", category: "hydroxide"},
+            {name: "Гидроксид кальция", formula: "Ca(OH)₂", category: "hydroxide"},
+            {name: "Гидроксид алюминия", formula: "Al(OH)₃", category: "hydroxide"},
+            {name: "Гидроксид железа(III)", formula: "Fe(OH)₃", category: "hydroxide"},
+            {name: "Хлорид натрия", formula: "NaCl", category: "salt"},
+            {name: "Карбонат кальция", formula: "CaCO₃", category: "salt"},
+            {name: "Сульфат натрия", formula: "Na₂SO₄", category: "salt"},
+            {name: "Нитрат калия", formula: "KNO₃", category: "salt"},
+            {name: "Фосфат кальция", formula: "Ca₃(PO₄)₂", category: "salt"},
+            {name: "Сульфат меди(II)", formula: "CuSO₄", category: "salt"}
+        ];
+
+        let gameActive = false;
+        let currentTask = null;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 120;
+        let selectedCategories = ["acid", "oxide", "hydroxide", "salt"];
+
+        // Инициализация таблицы соединений
+        function initCompoundsTable() {
+            const table = document.getElementById("compounds_table");
+            table.innerHTML = "";
+
+            const filteredCompounds = compoundsData.filter(c => selectedCategories.includes(c.category));
+            const shuffledCompounds = [...filteredCompounds].sort(() => Math.random() - 0.5);
+
+            shuffledCompounds.forEach(compound => {
+                const div = document.createElement("div");
+                div.className = `compound ${compound.category}`;
+                div.innerHTML = `
+                    <div class="compound-name">${compound.name}</div>
+                    <div class="compound-formula">${compound.formula}</div>
+                `;
+                div.dataset.name = compound.name;
+                div.dataset.formula = compound.formula;
+                table.appendChild(div);
+            });
+
+            updateCompoundVisibility();
+        }
+
+        // Обновление видимости названий и формул
+        function updateCompoundVisibility() {
+            const taskType = document.querySelector('input[name="comp_type"]:checked').value;
+
+            document.querySelectorAll('.compound').forEach(compound => {
+                const nameEl = compound.querySelector('.compound-name');
+                const formulaEl = compound.querySelector('.compound-formula');
+
+                if (taskType === 'name') {
+                    nameEl.style.display = 'none';
+                    formulaEl.style.display = 'block';
+                } else {
+                    nameEl.style.display = 'block';
+                    formulaEl.style.display = 'none';
+                }
+            });
+        }
+
+        // Открытие/закрытие меню
+        function open_close() {
+            document.getElementById("menushka").classList.toggle("hidden");
+        }
+
+        // Начало игры
+        function game_start() {
+            if (gameActive) return;
+
+            const taskType = document.querySelector('input[name="comp_type"]:checked').value;
+            selectedCategories = Array.from(document.querySelectorAll('input[name="comp_cat"]:checked')).map(el => el.value);
+
+            if (selectedCategories.length === 0) {
+                alert("Выберите хотя бы одну категорию соединений!");
+                return;
+            }
+
+            initCompoundsTable();
+
+            gameActive = true;
+            score = 0;
+            timeLeft = 120;
+            document.getElementById("game_score").textContent = "Баллы: 0";
+            document.getElementById("game_start").classList.add("hidden");
+            document.getElementById("game_time").classList.remove("hidden");
+
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    end_game();
+                }
+            }, 1000);
+
+            document.querySelectorAll(".compound").forEach(compound => {
+                compound.addEventListener("click", handleCompoundClick);
+            });
+
+            show_task(taskType);
+        }
+
+        // Обновление таймера
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById("game_time").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Показ задания
+        function show_task(taskType) {
+            const filteredCompounds = compoundsData.filter(c => selectedCategories.includes(c.category));
+            if (filteredCompounds.length === 0) {
+                document.getElementById("game_task").textContent = "Нет соединений в выбранных категориях!";
+                return null;
+            }
+
+            const randomIndex = Math.floor(Math.random() * filteredCompounds.length);
+            currentTask = filteredCompounds[randomIndex];
+
+            if (taskType === "name") {
+                document.getElementById("game_task").textContent = `Найдите формулу: ${currentTask.name}`;
+                return currentTask.formula;
+            } else {
+                document.getElementById("game_task").textContent = `Найдите название: ${currentTask.formula}`;
+                return currentTask.name;
+            }
+        }
+
+        // Обработка клика по соединению
+        function handleCompoundClick(event) {
+            if (!gameActive) return;
+
+            const clickedCompound = event.currentTarget;
+            const taskType = document.querySelector('input[name="comp_type"]:checked').value;
+            let isCorrect = false;
+
+            if (taskType === "name") {
+                isCorrect = clickedCompound.dataset.formula === currentTask.formula;
+            } else {
+                isCorrect = clickedCompound.dataset.name === currentTask.name;
+            }
+
+            if (isCorrect) {
+                score += 10;
+                document.getElementById("game_score").textContent = `Баллы: ${score}`;
+                clickedCompound.classList.add("correct");
+                setTimeout(() => {
+                    clickedCompound.classList.remove("correct");
+                }, 500);
+                show_task(taskType);
+            } else {
+                score = Math.max(0, score - 5);
+                document.getElementById("game_score").textContent = `Баллы: ${score}`;
+                clickedCompound.classList.add("error");
+                setTimeout(() => {
+                    clickedCompound.classList.remove("error");
+                }, 500);
+            }
+        }
+
+        // Завершение игры
+        function end_game() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            document.getElementById("game_task").textContent = `Игра окончена! Ваш результат: ${score} баллов`;
+            document.getElementById("game_start").classList.remove("hidden");
+            document.getElementById("game_time").classList.add("hidden");
+
+            document.querySelectorAll(".compound").forEach(compound => {
+                compound.removeEventListener("click", handleCompoundClick);
+            });
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("menu_options").addEventListener("click", open_close);
+
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#menu_options") && !e.target.closest("#menushka")) {
+                    document.getElementById("menushka").classList.add("hidden");
+                }
+            });
+
+            document.querySelectorAll('input[name="comp_type"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    updateCompoundVisibility();
+                });
+            });
+
+            initCompoundsTable();
+        });
+    </script>
+</body>
+</html>
