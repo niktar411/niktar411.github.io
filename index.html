@@ -43,7 +43,7 @@
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            height: calc(var(--base-size) * 2.5);
+            height: calc(var(--base-size) * 4);
             background-color: #eee;
             margin: 0;
             padding: 0 var(--gap);
@@ -67,7 +67,7 @@
         }
 
         #game_task {
-            font-size: calc(var(--base-size) * 1.2);
+            font-size: calc(var(--base-size) * 2);
             font-weight: bold;
             text-align: center;
             white-space: nowrap;
@@ -409,10 +409,10 @@
             currentTask = filteredCompounds[randomIndex];
 
             if (taskType === "name") {
-                document.getElementById("game_task").textContent = `Найдите формулу: ${currentTask.name}`;
+                document.getElementById("game_task").textContent = `${currentTask.name}`;
                 return currentTask.formula;
             } else {
-                document.getElementById("game_task").textContent = `Найдите название: ${currentTask.formula}`;
+                document.getElementById("game_task").textContent = `${currentTask.formula}`;
                 return currentTask.name;
             }
         }
